@@ -5,6 +5,7 @@ import com.therainbowville.minegasm.common.*;
 import com.therainbowville.minegasm.config.ClientConfig;
 import com.therainbowville.minegasm.config.MinegasmConfig;
 
+import com.therainbowville.minegasm.events.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -160,6 +161,12 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
+    public static void onClientAttack(ClientAttackEvent event)
+    {
+        ((VibrationStateAttack)vibrationStates.get("attack")).onAttack();
+    }
+
+    @SubscribeEvent
     public static void onAttack(AttackEntityEvent event)
     {
         if (isPlayer(event.getEntityLiving()))
@@ -175,6 +182,15 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
+    public static void onClientDamage(ClientDamageEvent event)
+    {
+        if (isPlayer(event.getEntity()))
+        {
+            ((VibrationStateHurt)vibrationStates.get("hurt")).onHurt();
+        }
+    }
+
+    @SubscribeEvent
     public static void onHurt(LivingHurtEvent event)
     {
         if (isPlayer(event.getEntityLiving()))
@@ -184,8 +200,19 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
+    public static void onClientBlockBreak(ClientBlockBreakEvent event)
+    {
+        LOGGER.info("Block break event");
+        if (isPlayer(event.getPlayer()))
+        {
+            ((VibrationStateMine)vibrationStates.get("mine")).onBreak(event.getBlockState());
+        }
+    }
+
+    @SubscribeEvent
     public static void onBreak(BlockEvent.BreakEvent event)
     {
+        LOGGER.info("Break event");
         if (isPlayer(event.getPlayer()))
         {
             ((VibrationStateMine)vibrationStates.get("mine")).onBreak(event.getState());
@@ -201,7 +228,16 @@ public class ClientEventHandler {
             ((VibrationStateHarvest)vibrationStates.get("harvest")).onHarvest();
         }
     }
-    
+
+    @SubscribeEvent
+    public static void onClientBlockPlace(ClientBlockPlaceEvent event)
+    {
+        if (isPlayer(event.getPlayer()))
+        {
+            ((VibrationStatePlace)vibrationStates.get("place")).onPlace();
+        }
+    }
+
     @SubscribeEvent
     public static void onPlace(BlockEvent.EntityPlaceEvent event){
         if (isPlayer(event.getEntity()))
@@ -229,6 +265,12 @@ public class ClientEventHandler {
         {
             ((VibrationStateXpChange)vibrationStates.get("xpChange")).onXpChange(((PlayerEntity)event.getEntityLiving()).totalExperience, event.getAmount());
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientExperience(ClientExperienceEvent event)
+    {
+        ((VibrationStateXpChange)vibrationStates.get("xpChange")).onXpChange(event.getLevel(), event.getAmount());
     }
    
     
