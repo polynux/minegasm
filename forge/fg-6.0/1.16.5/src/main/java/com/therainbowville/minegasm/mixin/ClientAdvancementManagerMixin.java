@@ -21,7 +21,6 @@ import java.util.Map;
 @Mixin(ClientAdvancementManager.class)
 public class ClientAdvancementManagerMixin {
     private static Logger LOGGER = LogManager.getLogger();
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     public void onUpdate(SAdvancementInfoPacket advancementInfoPacket, CallbackInfo ci) {
@@ -29,8 +28,7 @@ public class ClientAdvancementManagerMixin {
 
         for(Map.Entry<ResourceLocation, AdvancementProgress> entry : advancementInfoPacket.getProgress().entrySet()) {
             Advancement advancement = ((ClientAdvancementManager) (Object) this).getAdvancements().get(entry.getKey());
-            PlayerEntity player = minecraft.player;
-            AdvancementEvent event = new AdvancementEvent(player, advancement);
+            AdvancementEvent event = new AdvancementEvent((PlayerEntity) Minecraft.getInstance().player, advancement);
             MinecraftForge.EVENT_BUS.post(event);
         }
     }

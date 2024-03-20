@@ -191,6 +191,12 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
+    public static void onHealVitality(ClientHealEvent event)
+    {
+        ((VibrationStateVitality)vibrationStates.get("vitality")).onTick(event.getPlayer());
+    }
+
+    @SubscribeEvent
     public static void onHurt(LivingHurtEvent event)
     {
         if (isPlayer(event.getEntityLiving()))
